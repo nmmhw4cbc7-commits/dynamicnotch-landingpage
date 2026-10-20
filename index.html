@@ -15,7 +15,7 @@ html,body{background:#fff;color:#111;
 html.lock{overflow:hidden}
 
 /* Scroll-Bühne: Der Mac wird nur durch Scrollen gesteuert */
-.hero{position:relative;height:640vh}
+.hero{position:relative;height:600vh}
 .stage{position:sticky;top:0;width:100%;height:100vh;height:100dvh;overflow:hidden;background:transparent;color:#fff;z-index:2;pointer-events:none}
 
 /* MacBook (3D) */
@@ -132,7 +132,7 @@ html.lock{overflow:hidden}
 .note{font-size:13px;color:rgba(255,255,255,.9);text-align:center;text-shadow:0 1px 8px rgba(0,0,0,.4)}
 
 /* Text zum Programm */
-.content{position:relative;z-index:1;margin-top:-190vh;color:#111;padding:0 24px 16vh}
+.content{position:relative;z-index:1;margin-top:0;color:#111;padding:14vh 24px 16vh}
 .wrap{max-width:1040px;margin:0 auto}
 .content h2{font-size:clamp(34px,6vw,76px);line-height:1.04;letter-spacing:-.035em;font-weight:650;max-width:14em}
 .lead{font-size:clamp(18px,2.1vw,24px);line-height:1.5;color:var(--muted);max-width:34em;margin-top:28px}
@@ -327,25 +327,22 @@ html.lock{overflow:hidden}
     cta.style.pointerEvents = p < .04 ? 'auto' : 'none';
     hint.style.opacity = 1 - seg(p, 0, .02);
 
-    // 2) Rauszoomen, 3) Maus fährt zur Notch, Widget klappt auf, 4) Zuklappen, 5) Flip + Verschwinden
-    const z = E(seg(p, .09, .28)), c = E(seg(p, .64, .78)), f = seg(p, .78, .96);
-    let s, ty;
-    if (p < .64)      { s = lerp(m.sf, m.s1, z); ty = lerp(0, m.ty1, z); }
-    else if (p < .78) { s = lerp(m.s1, m.s0, c); ty = lerp(m.ty1, m.ty0, c); }
-    else              { s = lerp(m.s0, .03, f * f); ty = m.vh / 2 - s * (LID_H + 300); }
-    mac.style.transform = T(ty, s);
-    mac.style.opacity = 1 - seg(p, .92, .98);
+    // 2) Rauszoomen, 3) Maus + Widget, 4) Zuklappen und nach vorne kippen, danach scrollt der Mac normal mit der Seite weg
+    const z = E(seg(p, .09, .30)), c = E(seg(p, .68, 1));
+    const s = lerp(m.s1, m.s0, c), ty = lerp(m.ty1, m.ty0, c);
+    mac.style.transform = p < .30 ? T(lerp(0, m.ty1, z), lerp(m.sf, m.s1, z)) : T(ty, s);
+    mac.style.opacity = 1;
     lid.style.transform = `rotateX(${-90 * c}deg)`;
-    rig.style.transform = `rotateX(${-TILT * E(seg(p, .68, .78))}deg)`;
-    flip.style.transform = `rotateX(${-360 * E(f)}deg)`;
+    rig.style.transform = `rotateX(${-TILT * E(seg(p, .72, 1))}deg)`;
+    flip.style.transform = 'none';
 
     // Maus (Koordinaten im Bildschirm, Spitze = oben links)
     const NX = 583, NY = 14;
-    const ein = E(seg(p, .28, .37)), aus = E(seg(p, .56, .63));
+    const ein = E(seg(p, .30, .38)), aus = E(seg(p, .56, .63));
     const cx = p < .5 ? lerp(NX + 330, NX + 2, ein) : lerp(NX + 2, NX + 240, aus);
     const cy = p < .5 ? lerp(470, NY, ein) : lerp(NY, 330, aus);
     cursor.style.transform = `translate(${cx - 3}px,${cy - 2}px)`;
-    cursor.style.opacity = p < .5 ? seg(p, .28, .31) : 1 - seg(p, .58, .63);
+    cursor.style.opacity = p < .5 ? seg(p, .30, .33) : 1 - seg(p, .58, .63);
     island.classList.toggle('open', p >= .38 && p < .56);
   }
   const update = () => render(progress());
