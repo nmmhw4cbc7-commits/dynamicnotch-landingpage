@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DynamicNotch – The Dynamic Notch your Mac actually needs</title>
+<meta name="description" content="DynamicNotch turns the notch of your MacBook into something useful. Download it for macOS.">
+<style>
+:root{--rim:#b9b9c0;--bezel:#0b0b0c;--spring:cubic-bezier(.34,1.3,.5,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#050507;color:#fff;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.stage{position:fixed;inset:0;overflow:hidden;background:radial-gradient(60% 50% at 50% 55%,#15151c 0%,#050507 72%)}
+
+/* MacBook */
+.mac{position:absolute;left:50%;top:0;width:1200px;margin-left:-600px;transform-origin:50% 0;will-change:transform}
+.lid{border:2px solid var(--rim);border-bottom:0;border-radius:28px 28px 0 0;background:var(--bezel);padding:14px 14px 18px}
+.screen{position:relative;height:730px;border-radius:8px;overflow:hidden;background:
+  radial-gradient(70% 60% at 78% 18%,#4a35b8 0%,transparent 70%),
+  radial-gradient(60% 70% at 12% 38%,#0f6aa3 0%,transparent 70%),
+  radial-gradient(90% 60% at 50% 105%,#c13a74 0%,transparent 70%),#0a0a22}
+.menubar{position:absolute;top:0;left:0;right:0;height:30px;display:flex;justify-content:space-between;align-items:center;
+  padding:0 120px;background:rgba(0,0,0,.22);font-size:13px;color:rgba(255,255,255,.9)}
+.menubar span{display:flex;gap:20px}
+.mnotch{position:absolute;top:0;left:50%;width:152px;height:30px;margin-left:-76px;background:#000;border-radius:0 0 10px 10px}
+.base{height:16px;width:1320px;margin-left:-60px;position:relative;border-radius:0 0 22px 22px;
+  background:linear-gradient(#e4e4e8,#a9a9b0 60%,#8d8d94)}
+.base::after{content:"";position:absolute;top:0;left:50%;width:180px;height:6px;margin-left:-90px;
+  background:rgba(0,0,0,.28);border-radius:0 0 8px 8px}
+
+/* Notch, expands over the screen */
+.notch{position:absolute;left:50%;top:0;transform:translateX(-50%);background:#000;overflow:hidden;opacity:0;
+  border-radius:0 0 10px 10px;
+  transition:width .95s var(--spring),height .95s var(--spring),border-radius .95s var(--spring),box-shadow 1s}
+.notch.on{opacity:1}
+.notch.big{box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.copy{position:absolute;left:50%;text-align:center;white-space:nowrap;font-weight:650;letter-spacing:-.03em;line-height:1.14}
+.line{display:block}
+.line.two{color:rgba(255,255,255,.62)}
+.w{display:inline-block;opacity:0;transform:translateY(.35em);filter:blur(10px);
+  transition:opacity .6s ease,transform .7s cubic-bezier(.2,.8,.2,1),filter .6s ease}
+.w.in{opacity:1;transform:none;filter:none}
+
+/* Buttons */
+.cta{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:18px;
+  padding:0 20px;opacity:0;transform:translateY(14px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.cta.show{opacity:1;transform:none}
+.row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:10px;height:52px;padding:0 26px;border-radius:999px;
+  font-size:17px;font-weight:600;text-decoration:none;transition:transform .2s ease,background .2s ease}
+.btn svg{width:18px;height:18px;fill:currentColor}
+.btn.primary{background:#fff;color:#000}
+.btn.primary:hover{transform:scale(1.03)}
+.btn.ghost{color:#fff;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.btn.ghost:hover{background:rgba(255,255,255,.2)}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.note{font-size:13px;color:rgba(255,255,255,.6);text-align:center}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="mac" id="mac" aria-hidden="true">
+    <div class="lid">
+      <div class="screen">
+        <div class="menubar">
+          <span><b>Finder</b><i>File</i><i>Edit</i><i>View</i><i>Go</i><i>Window</i></span>
+          <span><i>9:41</i></span>
+        </div>
+        <div class="mnotch"></div>
+      </div>
+    </div>
+    <div class="base"></div>
+  </div>
+
+  <div class="notch" id="notch">
+    <h1 class="copy" id="copy" aria-label="The Dynamic Notch your Mac actually needs">
+      <span class="line" id="l1"><span class="w">The</span> <span class="w">Dynamic</span> <span class="w">Notch</span></span>
+      <span class="line two" id="l2"><span class="w">your</span> <span class="w">Mac</span> <span class="w">actually</span> <span class="w">needs.</span></span>
+    </h1>
+  </div>
+
+  <div class="cta" id="cta">
+    <div class="row">
+      <!-- TODO: DEIN-USER / DEIN-REPO / Dateiname anpassen (oder "/download" mit Weiterleitung nutzen) -->
+      <a class="btn primary" href="https://github.com/DEIN-USER/DEIN-REPO/releases/latest/download/DynamicNotch.dmg">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 11.5 3.5 7l1.1-1.1L7.2 8.5V1h1.6v7.5l2.6-2.6L12.5 7 8 11.5zM2 13h12v1.5H2z"/></svg>
+        Download now
+      </a>
+      <a class="btn ghost" href="https://github.com/DEIN-USER/DEIN-REPO" target="_blank" rel="noopener">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        Show on GitHub
+      </a>
+    </div>
+    <p class="note">For macOS. On first launch, right-click the app and choose Open.</p>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const mac = $('#mac'), notch = $('#notch'), copy = $('#copy'), l1 = $('#l1'), l2 = $('#l2'), cta = $('#cta');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const MW = 1200, SCREEN_OFFSET = 16; // Rand 2px + Bezel 14px
+  let m, finished = false;
+
+  function metrics() {
+    const vw = innerWidth, vh = innerHeight;
+    const sf = Math.max(1.25, vw * 1.12 / MW);
+    let fs = Math.max(22, Math.min(vw * 0.062, 68));
+    const measure = () => {
+      copy.style.fontSize = fs + 'px';
+      return [l1.offsetWidth, l2.offsetWidth];
+    };
+    let [w1, w2] = measure();
+    const need = Math.max(w1, w2) + fs * 1.8;
+    if (need > vw - 24) { fs *= (vw - 24) / need; [w1, w2] = measure(); }
+    const padY = fs * .5, padX = fs * .9, lineH = fs * 1.14;
+    const wA = w1 + padX * 2, wB = Math.max(w1, w2) + padX * 2;
+    copy.style.width = wB + 'px';
+    copy.style.marginLeft = -wB / 2 + 'px';
+    copy.style.top = padY + 'px';
+    const hB = padY * 2 + lineH * 2;
+    return { vw, vh, sf, fs, wA, wB, hA: padY * 2 + lineH, hB, r: fs * .6,
+             top: SCREEN_OFFSET * sf, ctaTop: SCREEN_OFFSET * sf + hB + Math.max(28, fs * .8) };
+  }
+
+  function setNotch(w, h, r) {
+    notch.style.width = w + 'px'; notch.style.height = h + 'px';
+    notch.style.borderRadius = `0 0 ${r}px ${r}px`;
+  }
+  const words = (line, step) => [...line.querySelectorAll('.w')].forEach((w, i) => {
+    w.style.transitionDelay = (i * step) + 's'; w.classList.add('in');
+  });
+  const noTransition = fn => {
+    notch.style.transition = 'none'; fn(); void notch.offsetWidth; notch.style.transition = '';
+  };
+
+  function showFinal() {
+    m = metrics();
+    mac.style.transform = `translate3d(0,0,0) scale(${m.sf})`;
+    noTransition(() => {
+      notch.style.top = m.top + 'px';
+      setNotch(m.wB, m.hB, m.r);
+    });
+    notch.classList.add('on', 'big');
+    cta.style.top = m.ctaTop + 'px';
+    cta.classList.add('show');
+    document.querySelectorAll('.w').forEach(w => { w.style.transitionDelay = '0s'; w.classList.add('in'); });
+    finished = true;
+  }
+
+  function play() {
+    m = metrics();
+    const MH = mac.offsetHeight;
+    const s0 = Math.min(innerWidth * .5 / MW, innerHeight * .5 / MH);
+    const ty0 = (innerHeight - MH * s0) / 2;
+    const from = `translate3d(0,${ty0}px,0) scale(${s0})`;
+    const to = `translate3d(0,0,0) scale(${m.sf})`;
+    mac.style.transform = from;
+
+    noTransition(() => {
+      notch.style.top = m.top + 'px';
+      setNotch(152 * m.sf, 30 * m.sf, 10 * m.sf);
+    });
+    cta.style.top = m.ctaTop + 'px';
+
+    setTimeout(() => {
+      const anim = mac.animate([{ transform: from }, { transform: to }],
+        { duration: 3200, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'forwards' });
+      anim.finished.then(() => {
+        mac.style.transform = to; anim.cancel();
+        notch.classList.add('on');
+        setTimeout(() => { setNotch(m.wA, m.hA, m.r); setTimeout(() => words(l1, .09), 250); }, 300);
+        setTimeout(() => { notch.classList.add('big'); setNotch(m.wB, m.hB, m.r); setTimeout(() => words(l2, .08), 200); }, 1500);
+        setTimeout(() => { cta.classList.add('show'); finished = true; }, 2900);
+      });
+    }, 700);
+  }
+
+  addEventListener('resize', () => { if (finished) showFinal(); });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => reduce ? showFinal() : play());
+})();
+</script>
+</body>
+</html>
