@@ -132,9 +132,9 @@ html,body{height:100%;background:#fff;color:#fff;overflow:hidden;
 
   function metrics() {
     const vw = innerWidth, vh = innerHeight;
-    const margin = Math.round(vh * .09);                       // weißer Rand über dem Mac
-    const sf = Math.max(1.25, vw * 1.12 / MW, (vh - margin) * 1.05 / (LID_H - 20));
-    let fs = Math.max(22, Math.min(vw * .062, 68));
+    const margin = 0;                                          // am Ende kein weißer Rand mehr oben
+    const sf = Math.max(1.4, vw * 1.2 / MW, (vh - margin) * 1.05 / (LID_H - 20));
+    let fs = Math.max(22, Math.min(vw * .068, 76));
     const measure = () => { copy.style.fontSize = fs + 'px'; return [l1.offsetWidth, l2.offsetWidth]; };
     let [w1, w2] = measure();
     const need = Math.max(w1, w2) + fs * 1.8;
@@ -179,7 +179,7 @@ html,body{height:100%;background:#fff;color:#fff;overflow:hidden;
 
   function play() {
     m = metrics();
-    const s0 = Math.min(innerWidth * .66 / MW, innerHeight * .7 / MH);   // Start: Mac schon offen und nah
+    const s0 = Math.min(innerWidth * .74 / MW, innerHeight * .78 / MH);   // Start: Mac schon offen und nah
     const from = T((innerHeight - MH * s0) / 2, s0), to = T(m.margin, m.sf);
     mac.style.transform = from;
     prepNotch();
